@@ -635,7 +635,7 @@ export function CreateEventModal({ onClose, onCreate, initialTitle = '', autoFil
           </div>
         )}
 
-        <button type="submit" disabled={!canSubmit || saving} className="w-full py-4 rounded-2xl bg-sky-50 text-gray-900 font-bold text-base disabled:opacity-40 hover:bg-sky-50 active:scale-98 transition-all mt-2">
+        <button type="submit" disabled={!canSubmit || saving} className="w-full py-4 rounded-2xl bg-[#FFB7C5] text-[#1a1014] font-bold text-base disabled:opacity-40 hover:bg-[#F2C7C7] active:scale-[0.98] transition-all mt-2">
           {saving ? 'Creating…' : 'Create event'}
         </button>
       </form>
