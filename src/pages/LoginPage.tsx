@@ -1,9 +1,36 @@
+import { useState } from 'react';
+
 interface Props {
   onSignIn: () => Promise<void>;
   loading: boolean;
 }
 
+function isInAppBrowser(): boolean {
+  const ua = navigator.userAgent;
+  return /FBAN|FBAV|Instagram|Twitter|Line|Snapchat/.test(ua)
+    || (ua.includes('Android') && ua.includes('; wv)'));
+}
+
+function isIOS(): boolean {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
 export function LoginPage({ onSignIn, loading }: Props) {
+  const [copied, setCopied] = useState(false);
+  const inApp = isInAppBrowser();
+  const ios = isIOS();
+  const url = window.location.href;
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // fallback: select text
+    }
+  }
+
   return (
     <div className="min-h-svh flex flex-col items-center justify-center bg-[#fdf6ee] px-6">
 
@@ -21,26 +48,51 @@ export function LoginPage({ onSignIn, loading }: Props) {
           <p className="text-[#b07888] mt-2.5 text-base">plan things with your people</p>
         </div>
 
-        {/* Card */}
-        <div className="bg-white rounded-3xl p-7 border border-rose-100" style={{boxShadow: '0 4px 24px rgba(180,80,100,0.10)'}}>
-          <p className="text-sm text-[#b07888] mb-5 leading-relaxed">
-            sign in to see what's coming up with your friend groups
-          </p>
+        {/* In-app browser warning */}
+        {inApp ? (
+          <div className="bg-white rounded-3xl p-7 border border-rose-100 flex flex-col gap-4" style={{boxShadow: '0 4px 24px rgba(180,80,100,0.10)'}}>
+            <div className="text-center">
+              <p className="text-2xl mb-2">🌐</p>
+              <p className="font-bold text-[#1a1014] text-base">Open in {ios ? 'Safari' : 'Chrome'} to sign in</p>
+              <p className="text-sm text-[#b07888] mt-1.5 leading-relaxed">
+                Google sign-in doesn't work inside the {ios ? 'WhatsApp' : 'in-app'} browser.
+                Copy the link and open it in {ios ? 'Safari' : 'Chrome'}.
+              </p>
+            </div>
+            <button
+              onClick={copyLink}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#FFB7C5] text-[#1a1014] font-bold text-base active:scale-98 transition-all"
+            >
+              {copied ? '✓ Copied!' : '📋 Copy link'}
+            </button>
+            {copied && (
+              <p className="text-xs text-center text-[#b07888]">
+                Now open {ios ? 'Safari' : 'Chrome'} and paste the link
+              </p>
+            )}
+          </div>
+        ) : (
+          /* Normal card */
+          <div className="bg-white rounded-3xl p-7 border border-rose-100" style={{boxShadow: '0 4px 24px rgba(180,80,100,0.10)'}}>
+            <p className="text-sm text-[#b07888] mb-5 leading-relaxed">
+              sign in to see what's coming up with your friend groups
+            </p>
 
-          <button
-            onClick={onSignIn}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl border border-gray-200 bg-white text-gray-700 font-semibold text-base hover:bg-rose-50 hover:border-rose-200 active:scale-98 transition-all disabled:opacity-50"
-            style={{boxShadow: '0 2px 8px rgba(0,0,0,0.06)'}}
-          >
-            <GoogleIcon />
-            {loading ? 'signing in…' : 'continue with Google'}
-          </button>
+            <button
+              onClick={onSignIn}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl border border-gray-200 bg-white text-gray-700 font-semibold text-base hover:bg-rose-50 hover:border-rose-200 active:scale-98 transition-all disabled:opacity-50"
+              style={{boxShadow: '0 2px 8px rgba(0,0,0,0.06)'}}
+            >
+              <GoogleIcon />
+              {loading ? 'signing in…' : 'continue with Google'}
+            </button>
 
-          <p className="text-xs text-gray-400 text-center mt-5 leading-relaxed">
-            also connects your Google Calendar — finalized events show up automatically
-          </p>
-        </div>
+            <p className="text-xs text-gray-400 text-center mt-5 leading-relaxed">
+              also connects your Google Calendar — finalized events show up automatically
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
