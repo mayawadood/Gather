@@ -53,23 +53,49 @@ export function LoginPage({ onSignIn, loading }: Props) {
           <div className="bg-white rounded-3xl p-7 border border-rose-100 flex flex-col gap-4" style={{boxShadow: '0 4px 24px rgba(180,80,100,0.10)'}}>
             <div className="text-center">
               <p className="text-2xl mb-2">🌐</p>
-              <p className="font-bold text-[#1a1014] text-base">Open in {ios ? 'Safari' : 'Chrome'} to sign in</p>
+              <p className="font-bold text-[#1a1014] text-base">One more step to sign in</p>
               <p className="text-sm text-[#b07888] mt-1.5 leading-relaxed">
-                Google sign-in doesn't work inside the {ios ? 'WhatsApp' : 'in-app'} browser.
-                Copy the link and open it in {ios ? 'Safari' : 'Chrome'}.
+                Google sign-in doesn't work inside {ios ? 'WhatsApp' : 'this'} browser.
               </p>
             </div>
-            <button
-              onClick={copyLink}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#FFB7C5] text-[#1a1014] font-bold text-base active:scale-98 transition-all"
-            >
-              {copied ? '✓ Copied!' : '📋 Copy link'}
-            </button>
-            {copied && (
-              <p className="text-xs text-center text-[#b07888]">
-                Now open {ios ? 'Safari' : 'Chrome'} and paste the link
-              </p>
-            )}
+
+            {/* Step-by-step instruction */}
+            <div className="bg-[#fff8fa] rounded-2xl border border-[#fce4e8] p-4 flex flex-col gap-3">
+              {ios ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-full bg-[#FFB7C5] text-[#1a1014] font-bold text-sm flex items-center justify-center shrink-0">1</span>
+                    <p className="text-sm text-[#1a1014]">Tap <strong>···</strong> at the bottom of your screen</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-full bg-[#FFB7C5] text-[#1a1014] font-bold text-sm flex items-center justify-center shrink-0">2</span>
+                    <p className="text-sm text-[#1a1014]">Tap <strong>Open in Safari</strong></p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-full bg-[#FFB7C5] text-[#1a1014] font-bold text-sm flex items-center justify-center shrink-0">1</span>
+                    <p className="text-sm text-[#1a1014]">Tap <strong>⋮</strong> in the top right corner</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-full bg-[#FFB7C5] text-[#1a1014] font-bold text-sm flex items-center justify-center shrink-0">2</span>
+                    <p className="text-sm text-[#1a1014]">Tap <strong>Open in Chrome</strong></p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Copy link as fallback */}
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs text-center text-[#c4a0a8]">or copy the link and paste it manually</p>
+              <button
+                onClick={copyLink}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#fce4e8] text-[#b07888] text-sm font-semibold active:scale-98 transition-all hover:bg-[#fff0f4]"
+              >
+                {copied ? '✓ Copied!' : '📋 Copy link'}
+              </button>
+            </div>
           </div>
         ) : (
           /* Normal card */
