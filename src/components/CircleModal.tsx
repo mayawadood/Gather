@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Hash, Users, Check, ChevronRight, Copy, Share2, ArrowLeft } from 'lucide-react';
+import { Plus, Hash, Users, Check, ChevronRight, Copy, Share2, ArrowLeft, LogOut, Trash2 } from 'lucide-react';
 import { Modal } from './Modal';
 import type { Group } from '../types';
 
@@ -10,11 +10,13 @@ interface Props {
   onSelect: (groupId: string) => void;
   onCreateGroup: (name: string) => Promise<string>;
   onJoinGroup: (code: string) => Promise<string | null>;
+  onLeaveGroup: (groupId: string, userId: string) => Promise<void>;
+  onDeleteGroup: (groupId: string) => Promise<void>;
   onClose: () => void;
 }
 
 export function CircleModal({
-  groups, selectedGroupId, currentUserId, onSelect, onCreateGroup, onJoinGroup, onClose
+  groups, selectedGroupId, currentUserId, onSelect, onCreateGroup, onJoinGroup, onLeaveGroup, onDeleteGroup, onClose
 }: Props) {
   const [mode, setMode] = useState<'list' | 'detail' | 'create' | 'join'>('list');
   const [detailGroup, setDetailGroup] = useState<Group | null>(null);
@@ -23,6 +25,7 @@ export function CircleModal({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -151,6 +154,46 @@ export function CircleModal({
             <p className="text-xs text-[#c4a0a8] text-center -mt-1">
               {navigator.share != null ? 'opens your share sheet' : 'copies a message with the code'}
             </p>
+          </div>
+
+          {/* Leave / Delete */}
+          <div className="border-t border-rose-100 pt-4">
+            {g.createdBy === currentUserId ? (
+              confirmDelete ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm text-center text-[#1a1014] font-semibold">Delete "{g.name}" for everyone?</p>
+                  <p className="text-xs text-center text-[#c4a0a8]">This can't be undone.</p>
+                  <div className="flex gap-2 mt-1">
+                    <button
+                      onClick={() => setConfirmDelete(false)}
+                      className="flex-1 py-2.5 rounded-xl border border-[#fce4e8] text-sm text-[#b07888] font-semibold hover:bg-[#fff8fa] transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={async () => { await onDeleteGroup(g.id); onClose(); }}
+                      className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-100 text-red-400 text-sm font-semibold hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 size={14} /> Delete circle
+                </button>
+              )
+            ) : (
+              <button
+                onClick={async () => { await onLeaveGroup(g.id, currentUserId); onClose(); }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#fce4e8] text-[#b07888] text-sm font-semibold hover:bg-[#fff8fa] transition-colors"
+              >
+                <LogOut size={14} /> Leave circle
+              </button>
+            )}
           </div>
         </div>
       </Modal>

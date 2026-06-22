@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   collection, query, where, onSnapshot, addDoc, updateDoc,
-  doc, getDocs
+  doc, getDocs, deleteDoc
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Group } from '../types';
@@ -59,5 +59,21 @@ export function useGroups(userId: string | null) {
     await updateDoc(doc(db, 'groups', groupId), { inviteCode: randomCode() });
   }
 
-  return { groups, loading, createGroup, joinGroup, regenerateCode };
+  async function leaveGroup(groupId: string, userId: string) {
+    const group = groups.find(g => g.id === groupId);
+    if (!group) return;
+    const remaining = group.members.filter(m => m !== userId);
+    if (remaining.length === 0) {
+      // Last member — delete the group entirely
+      await deleteDoc(doc(db, 'groups', groupId));
+    } else {
+      await updateDoc(doc(db, 'groups', groupId), { members: remaining });
+    }
+  }
+
+  async function deleteGroup(groupId: string) {
+    await deleteDoc(doc(db, 'groups', groupId));
+  }
+
+  return { groups, loading, createGroup, joinGroup, regenerateCode, leaveGroup, deleteGroup };
 }
