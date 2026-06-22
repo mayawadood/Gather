@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
 
 interface Props {
   events: GatherEvent[];
-  onEventClick: (event: GatherEvent) => void;
+  onEventClick?: (event: GatherEvent) => void;
 }
 
 interface GeoEvent {
@@ -53,7 +53,7 @@ function pinHtml(cover: string, active: boolean) {
   </div>`;
 }
 
-export function MapView({ events, onEventClick }: Props) {
+export function MapView({ events }: Props) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());

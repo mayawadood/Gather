@@ -149,7 +149,7 @@ export function CircleModal({
               send an invite link
             </button>
             <p className="text-xs text-[#c4a0a8] text-center -mt-1">
-              {navigator.share ? 'opens your share sheet' : 'copies a message with the code'}
+              {navigator.share != null ? 'opens your share sheet' : 'copies a message with the code'}
             </p>
           </div>
         </div>

@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function WishlistTab({ groupId, userId, userName, onPromote }: Props) {
-  const { wishes, addWish, promoteWish, unplanWish, deleteWish, editWish } = useWishlist(groupId);
+  const { wishes, addWish, unplanWish, deleteWish, editWish } = useWishlist(groupId);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editEmoji, setEditEmoji] = useState('✨');
