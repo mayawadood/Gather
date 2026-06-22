@@ -18,7 +18,3 @@ Plan things with your people.
 ## Stack
 
 React/TypeScript · Firebase · Claude API · Vercel
-
-## License
-
-MIT
