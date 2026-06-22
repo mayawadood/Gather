@@ -1,83 +1,60 @@
 # Gather
 
-A mobile-first progressive web app for scheduling events with friend groups. Gather eliminates the back-and-forth of group planning — friends vote on times and locations, the app tracks availability, and everything syncs in real time.
+An AI-assisted group scheduling PWA. Describe an event in plain English, invite your friends, and let everyone vote on times and locations — everything syncs in real time.
 
-**Live demo:** [your-url-here.vercel.app]
+Prototyped in Figma, built with Claude Code, and piloted with a live friend group.
+
+**Live:** [gather-nine-umber.vercel.app](https://gather-nine-umber.vercel.app)
 
 ---
 
-## Features
+## What it does
 
-**Event scheduling**
-- Create events with multiple date/time options for friends to vote on
-- Location voting — propose multiple venues and let the group decide
-- Availability polling — share a date range and friends fill in when they're free
-- If only one time option is set, the event finalizes automatically with no vote needed
-- Recurring events (weekly, biweekly, monthly)
+**AI-assisted event creation**
+Type something like "dinner at Blue Ribbon Saturday 8pm" and Claude parses it into a structured event — name, location, date, time, and cover emoji. If you mention multiple locations ("drinks at The Fox or The Anchor"), it automatically creates a location vote.
 
-**AI assistant (Claude)**
-- Natural language event creation — type "dinner at Blue Ribbon Saturday 8pm" and the form auto-fills
-- Parses multiple locations ("drinks at The Fox or The Anchor") and creates a location vote automatically
-- AI-suggested times based on your group's historical event patterns
-- Auto-fills the create form when promoting an idea to an event
+**Group voting**
+Friends vote on proposed times and locations. Once a majority picks one, the event finalizes. If only one time option is added, it finalizes automatically with no vote needed.
 
 **Map view**
-- Upcoming finalized events displayed as pins on an interactive map (OpenStreetMap + CartoDB Positron)
-- Click a pin to zoom in and expand the corresponding event card
-- Google Maps deep links on every event
+Upcoming finalized events appear as pins on an interactive map. Tap a pin to zoom in and see event details. Every event links directly to Google Maps.
 
 **Ideas board**
-- Shared wishlist for the group — propose ideas before they become real events
-- Promote an idea directly to an event (AI parses the idea title automatically)
-- Edit, delete, or move planned ideas back to the ideas list
+A shared wishlist for the group. Propose ideas before they're real events, promote them when the group is ready, and the AI pre-fills the create form from the idea title.
 
-**Integrations**
-- Google Calendar sync via OAuth 2.0
-- Google Maps Places autocomplete on all location inputs
-- Real-time sync across all group members via Firebase Firestore
+**Google Calendar sync**
+Once an event is finalized, any member can add it directly to their Google Calendar via OAuth.
 
-**Other**
-- Google Sign-In authentication
-- Group management — create groups, join via invite code, switch between groups
-- Optional profile photo (resized to 200×200 via Canvas API, stored locally)
-- PostHog analytics (event creation funnel, vote tracking, feature usage)
-- PWA — installable on iOS and Android from the browser
+**Circles**
+Create a group, share an invite code, and friends join. Switch between multiple circles from the header.
 
 ---
 
-## Tech stack
+## Stack
 
-| Layer | Technology |
+| | |
 |---|---|
 | Frontend | React 18 + TypeScript + Vite |
 | Styling | Tailwind CSS v4 |
-| Database | Firebase Firestore (real-time listeners) |
+| Database | Firebase Firestore |
 | Auth | Firebase Authentication (Google OAuth) |
-| AI | Anthropic Claude (`claude-haiku-4-5`) via `@anthropic-ai/sdk` |
-| Maps | Leaflet + OpenStreetMap + CartoDB Positron tiles |
-| Geocoding | Nominatim (free, no API key required) |
-| Places autocomplete | Google Places API (New) REST endpoint |
+| AI | Anthropic Claude (`claude-haiku-4-5`) |
+| Maps | Leaflet + CartoDB Positron tiles |
+| Places | Google Places API (New) |
 | Analytics | PostHog |
 | Deployment | Vercel |
 
 ---
 
-## Getting started
-
-### Prerequisites
-- Node.js 18+
-- A Firebase project with Firestore and Google Authentication enabled
-- An Anthropic API key (optional — AI features degrade gracefully without it)
-
-### Setup
+## Running locally
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/gather.git
-cd gather
+git clone https://github.com/mayawadood/Gather.git
+cd Gather
 npm install
 ```
 
-Create a `.env` file in the root:
+Create a `.env` file:
 
 ```
 VITE_FIREBASE_API_KEY=
@@ -87,9 +64,9 @@ VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 
-VITE_ANTHROPIC_API_KEY=        # optional — enables AI features
-VITE_GOOGLE_MAPS_API_KEY=      # optional — enables Places autocomplete
-VITE_POSTHOG_KEY=              # optional — enables analytics
+VITE_ANTHROPIC_API_KEY=       # optional — enables AI parsing
+VITE_GOOGLE_MAPS_API_KEY=     # optional — enables Places autocomplete
+VITE_POSTHOG_KEY=             # optional — enables analytics
 VITE_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
@@ -97,40 +74,27 @@ VITE_POSTHOG_HOST=https://us.i.posthog.com
 npm run dev
 ```
 
-### Firebase setup
-
-1. Enable **Firestore** and **Google Authentication** in the Firebase console
-2. Add your local (`localhost`) and production domains to **Authentication → Authorized domains**
+Firebase setup: enable Firestore and Google Auth, then add `localhost` and your production domain to **Authentication → Authorized domains**.
 
 ---
 
-## Architecture notes
+## A few decisions worth noting
 
-**Real-time sync** — All event and group state is driven by Firestore `onSnapshot` listeners. No polling, no manual refresh — changes made by any group member appear instantly for everyone.
+**Nominatim instead of Google Maps for geocoding** — the map tab uses Nominatim (free, no key) to plot pins. Accurate enough for city-level placement and avoids another paid API.
 
-**AI parsing** — `src/lib/ai.ts` sends a structured prompt to Claude that returns a typed JSON object. The parser handles single dates, multiple date options, single locations, and multi-location vote scenarios from a single free-text input — with graceful fallback if the key is missing.
+**Places API (New) via REST instead of the JS SDK** — calling the endpoint directly with `fetch` sidesteps script-loading race conditions and HMR conflicts that broke the JS SDK in Vite.
 
-**Places autocomplete** — `src/lib/places.ts` uses the Places API (New) REST endpoint directly via `fetch` rather than the JS SDK, avoiding script-loading timing issues and HMR conflicts in Vite.
+**Ideas don't mark as "planned" until the event is actually created** — clicking "Plan it" opens the create form but only marks the idea as promoted once the user follows through. Avoids false positives in the ideas board.
 
-**Security note** — API keys are bundled in the client build. This is intentional for a private friend-group app where the user controls who has access. For a public product, AI and Maps calls should be proxied through a backend function.
-
----
-
-## Product decisions
-
-- **Nominatim over Google Maps for geocoding** — free, no API key, accurate enough for city-level pin placement on the map tab
-- **CartoDB Positron map tiles** — minimal, clean aesthetic compared to default OpenStreetMap; better suited to a social app
-- **Ideas don't move to "Planned" until the event is actually created** — clicking "Plan it" opens the create form but does not mark the idea as planned until the user follows through and clicks "Create event"
-- **Auto-finalize on a single time option** — if a creator sets exactly one time there is no need for a vote; the event finalizes immediately so friends see a confirmed time rather than an open poll
+**API keys are client-side** — intentional for a private friend-group app. For a public product these would be proxied through a backend function.
 
 ---
 
-## What I'd build next
+## What's next
 
-- **Expense splitting** — log costs per event and track who owes whom across the group
-- **Push notifications** — Firebase Cloud Messaging for vote reminders and finalization alerts
-- **Public availability link** — shareable link for non-members to fill in availability without joining the group
-- **Event comments** — threaded discussion per event so planning conversation stays in one place
+- Expense splitting per event
+- Push notifications via Firebase Cloud Messaging
+- Shareable availability link for non-members
 
 ---
 
