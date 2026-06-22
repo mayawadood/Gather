@@ -209,36 +209,36 @@ export function HomePage({
       </div>
 
       {/* View toggle + add button */}
-      <div className="px-5 flex items-center gap-2 mb-4">
+      <div className="px-5 flex flex-col gap-3 mb-4">
         <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
           <button
             onClick={() => setView('list')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
             <List size={14} /> List
           </button>
           <button
             onClick={() => setView('calendar')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'calendar' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'calendar' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
-            <Calendar size={14} /> Calendar
+            <Calendar size={14} /> Cal
           </button>
           <button
             onClick={() => setView('ideas')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'ideas' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'ideas' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
             <Lightbulb size={14} /> Ideas
           </button>
           <button
             onClick={() => setView('map')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'map' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-sm font-semibold transition-colors ${view === 'map' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
           >
             <Map size={14} /> Map
           </button>
         </div>
         <button
           onClick={handleOpenCreate}
-          className="ml-auto flex items-center gap-1.5 bg-[#FFB7C5] text-[#1a1014] px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-[#F2C7C7] active:scale-95 transition-all shadow-md shadow-[#F2C7C7]"
+          className="w-full flex items-center justify-center gap-1.5 bg-[#FFB7C5] text-[#1a1014] px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-[#F2C7C7] active:scale-95 transition-all shadow-md shadow-[#F2C7C7]"
         >
           <Plus size={16} /> New event
         </button>
