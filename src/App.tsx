@@ -11,6 +11,7 @@ import { SetupPage } from './pages/SetupPage';
 import { NameSetupPage } from './pages/NameSetupPage';
 import { initReminders } from './lib/reminders';
 import { identifyUser, track } from './lib/analytics';
+import { InstallBanner } from './components/InstallBanner';
 
 const NAME_KEY = 'gather_display_name';
 const PHOTO_KEY = 'gather_profile_photo';
@@ -118,6 +119,8 @@ function App() {
   if (!selectedGroup) return null;
 
   return (
+    <>
+    <InstallBanner />
     <HomePage
       user={user}
       groups={groups}
@@ -167,6 +170,7 @@ function App() {
       profilePhoto={profilePhoto ?? undefined}
       onChangeName={handleSaveName}
     />
+    </>
   );
 }
 
