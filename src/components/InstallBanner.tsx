@@ -55,9 +55,15 @@ export function InstallBanner() {
           <div className="flex-1 min-w-0">
             <p className="font-bold text-[#1a1014] text-sm">Add Gather to your home screen</p>
             {isIOS ? (
-              <p className="text-xs text-[#b07888] mt-0.5">
-                Tap <strong>Share</strong> <span className="text-base">⎙</span> then <strong>"Add to Home Screen"</strong>
-              </p>
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-[#b07888]">
+                <span className="bg-[#fff0f4] border border-[#fce4e8] rounded-lg px-2 py-1 font-semibold text-[#d4607a] flex items-center gap-1">
+                  Share <span className="text-sm">⎙</span>
+                </span>
+                <span>→</span>
+                <span className="bg-[#fff0f4] border border-[#fce4e8] rounded-lg px-2 py-1 font-semibold text-[#d4607a]">
+                  Add to Home Screen
+                </span>
+              </div>
             ) : (
               <p className="text-xs text-[#b07888] mt-0.5">
                 Install for quick access — works like a real app
