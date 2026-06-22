@@ -4,7 +4,15 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(npx vite *)",
       "Bash(npx tsc *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git filter-branch *)",
+      "Bash(git stash *)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch .env' --prune-empty --tag-name-filter cat -- --all)",
+      "Bash(git remote *)",
+      "Bash(gh pr *)"
     ]
   }
 }
