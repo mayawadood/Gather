@@ -118,6 +118,15 @@ function App() {
 
   if (!selectedGroup) return null;
 
+  // Auto-join via invite link (?code=XXXXXX) for users already in a group
+  const urlCode = new URLSearchParams(window.location.search).get('code');
+  if (urlCode) {
+    window.history.replaceState({}, '', window.location.pathname);
+    joinGroup(urlCode.toUpperCase(), user.uid, userName).then(id => {
+      if (id) handleSelectGroup(id);
+    });
+  }
+
   return (
     <>
     <InstallBanner />

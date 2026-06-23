@@ -64,10 +64,11 @@ export function CircleModal({
   }
 
   async function handleShare(g: Group) {
-    const message = `join "${g.name}" on Gather — use code: ${g.inviteCode}`;
+    const url = `${window.location.origin}?code=${g.inviteCode}`;
+    const message = `join "${g.name}" on Gather — tap to join: ${url}`;
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Join my circle on Gather', text: message });
+        await navigator.share({ title: `Join ${g.name} on Gather`, text: message, url });
       } catch { /* user cancelled */ }
     } else {
       await navigator.clipboard.writeText(message);

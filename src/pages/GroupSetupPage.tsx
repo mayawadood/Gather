@@ -8,9 +8,10 @@ interface Props {
 }
 
 export function GroupSetupPage({ onCreateGroup, onJoinGroup, userName }: Props) {
-  const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose');
+  const urlCode = new URLSearchParams(window.location.search).get('code')?.toUpperCase() ?? '';
+  const [mode, setMode] = useState<'choose' | 'create' | 'join'>(urlCode ? 'join' : 'choose');
   const [groupName, setGroupName] = useState('');
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(urlCode);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
