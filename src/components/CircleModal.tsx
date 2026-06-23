@@ -100,36 +100,7 @@ export function CircleModal({
     const g = detailGroup;
     const isCreator = g.createdBy === currentUserId;
     return (
-      <Modal title={
-        editingName ? (
-          <form onSubmit={async e => {
-            e.preventDefault();
-            if (!nameInput.trim()) return;
-            await onRenameGroup(g.id, nameInput.trim());
-            setDetailGroup({ ...g, name: nameInput.trim() });
-            setEditingName(false);
-          }} className="flex items-center gap-2">
-            <input
-              autoFocus
-              value={nameInput}
-              onChange={e => setNameInput(e.target.value)}
-              className="text-lg font-bold rounded-xl border border-[#FFB7C5] px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#FFB7C5] bg-[#fff8fa] w-40"
-              maxLength={30}
-            />
-            <button type="submit" className="text-xs font-bold text-white bg-[#FFB7C5] px-3 py-1.5 rounded-xl">save</button>
-            <button type="button" onClick={() => setEditingName(false)} className="text-xs text-[#b07888]">cancel</button>
-          </form>
-        ) : (
-          <span className="flex items-center gap-2">
-            {g.name}
-            {isCreator && (
-              <button type="button" onClick={() => { setNameInput(g.name); setEditingName(true); }} className="text-[#c4a0a8] hover:text-[#d4607a] transition-colors">
-                <Pencil size={14} />
-              </button>
-            )}
-          </span>
-        )
-      } onClose={onClose}>
+      <Modal title={g.name} onClose={onClose}>
         <div className="flex flex-col gap-5">
           <button
             type="button"
@@ -138,6 +109,43 @@ export function CircleModal({
           >
             <ArrowLeft size={14} /> back
           </button>
+
+          {/* Rename (creator only) */}
+          {isCreator && (
+            <div className="border border-[#fce4e8] rounded-2xl p-4 flex flex-col gap-3">
+              <p className="text-[11px] font-semibold text-[#c4a0a8] uppercase tracking-widest">circle name</p>
+              {editingName ? (
+                <form onSubmit={async e => {
+                  e.preventDefault();
+                  if (!nameInput.trim()) return;
+                  await onRenameGroup(g.id, nameInput.trim());
+                  setDetailGroup({ ...g, name: nameInput.trim() });
+                  setEditingName(false);
+                }} className="flex gap-2">
+                  <input
+                    autoFocus
+                    value={nameInput}
+                    onChange={e => setNameInput(e.target.value)}
+                    className="flex-1 rounded-xl border border-[#FFB7C5] px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#FFB7C5] bg-[#fff8fa]"
+                    maxLength={30}
+                  />
+                  <button type="submit" className="px-4 py-2.5 rounded-xl bg-[#FFB7C5] text-[#1a1014] text-sm font-bold">Save</button>
+                  <button type="button" onClick={() => setEditingName(false)} className="px-3 py-2.5 rounded-xl border border-[#fce4e8] text-sm text-[#b07888]">Cancel</button>
+                </form>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-base font-semibold text-[#1a1014]">{g.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setNameInput(g.name); setEditingName(true); }}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-[#d4607a] bg-[#fff0f4] border border-[#fce4e8] px-3 py-1.5 rounded-xl hover:bg-[#fce4e8] transition-colors"
+                  >
+                    <Pencil size={12} /> Rename
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Members */}
           <div>
