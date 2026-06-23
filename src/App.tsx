@@ -22,7 +22,7 @@ function App() {
   useEffect(() => { initReminders(); }, []);
 
   const { user, loading: authLoading, signInWithGoogle, logout, getAccessToken } = useAuth();
-  const { groups, loading: groupsLoading, createGroup, joinGroup, regenerateCode, leaveGroup, deleteGroup } = useGroups(user?.uid ?? null);
+  const { groups, loading: groupsLoading, createGroup, joinGroup, regenerateCode, leaveGroup, deleteGroup, renameGroup } = useGroups(user?.uid ?? null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(() => localStorage.getItem(NAME_KEY));
@@ -176,6 +176,7 @@ function App() {
       onJoinGroup={code => joinGroup(code, user.uid, userName)}
       onLeaveGroup={leaveGroup}
       onDeleteGroup={deleteGroup}
+      onRenameGroup={renameGroup}
       getAccessToken={getAccessToken}
       userName={userName}
       profilePhoto={profilePhoto ?? undefined}

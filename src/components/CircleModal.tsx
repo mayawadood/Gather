@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Hash, Users, Check, ChevronRight, Copy, Share2, ArrowLeft, LogOut, Trash2 } from 'lucide-react';
+import { Plus, Hash, Users, Check, ChevronRight, Copy, Share2, ArrowLeft, LogOut, Trash2, Pencil } from 'lucide-react';
 import { Modal } from './Modal';
 import type { Group } from '../types';
 
@@ -12,11 +12,12 @@ interface Props {
   onJoinGroup: (code: string) => Promise<string | null>;
   onLeaveGroup: (groupId: string, userId: string) => Promise<void>;
   onDeleteGroup: (groupId: string) => Promise<void>;
+  onRenameGroup: (groupId: string, name: string) => Promise<void>;
   onClose: () => void;
 }
 
 export function CircleModal({
-  groups, selectedGroupId, currentUserId, onSelect, onCreateGroup, onJoinGroup, onLeaveGroup, onDeleteGroup, onClose
+  groups, selectedGroupId, currentUserId, onSelect, onCreateGroup, onJoinGroup, onLeaveGroup, onDeleteGroup, onRenameGroup, onClose
 }: Props) {
   const [mode, setMode] = useState<'list' | 'detail' | 'create' | 'join'>('list');
   const [detailGroup, setDetailGroup] = useState<Group | null>(null);
@@ -26,6 +27,8 @@ export function CircleModal({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState('');
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -95,12 +98,42 @@ export function CircleModal({
   // ── Detail view ──────────────────────────────────────────────────────────
   if (mode === 'detail' && detailGroup) {
     const g = detailGroup;
+    const isCreator = g.createdBy === currentUserId;
     return (
-      <Modal title={g.name} onClose={onClose}>
+      <Modal title={
+        editingName ? (
+          <form onSubmit={async e => {
+            e.preventDefault();
+            if (!nameInput.trim()) return;
+            await onRenameGroup(g.id, nameInput.trim());
+            setDetailGroup({ ...g, name: nameInput.trim() });
+            setEditingName(false);
+          }} className="flex items-center gap-2">
+            <input
+              autoFocus
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+              className="text-lg font-bold rounded-xl border border-[#FFB7C5] px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#FFB7C5] bg-[#fff8fa] w-40"
+              maxLength={30}
+            />
+            <button type="submit" className="text-xs font-bold text-white bg-[#FFB7C5] px-3 py-1.5 rounded-xl">save</button>
+            <button type="button" onClick={() => setEditingName(false)} className="text-xs text-[#b07888]">cancel</button>
+          </form>
+        ) : (
+          <span className="flex items-center gap-2">
+            {g.name}
+            {isCreator && (
+              <button type="button" onClick={() => { setNameInput(g.name); setEditingName(true); }} className="text-[#c4a0a8] hover:text-[#d4607a] transition-colors">
+                <Pencil size={14} />
+              </button>
+            )}
+          </span>
+        )
+      } onClose={onClose}>
         <div className="flex flex-col gap-5">
           <button
             type="button"
-            onClick={() => setMode('list')}
+            onClick={() => { setMode('list'); setEditingName(false); }}
             className="flex items-center gap-1 text-sm text-[#b07888] hover:text-[#1a1014] transition-colors w-fit"
           >
             <ArrowLeft size={14} /> back

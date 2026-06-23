@@ -75,5 +75,9 @@ export function useGroups(userId: string | null) {
     await deleteDoc(doc(db, 'groups', groupId));
   }
 
-  return { groups, loading, createGroup, joinGroup, regenerateCode, leaveGroup, deleteGroup };
+  async function renameGroup(groupId: string, name: string) {
+    await updateDoc(doc(db, 'groups', groupId), { name: name.trim() });
+  }
+
+  return { groups, loading, createGroup, joinGroup, regenerateCode, leaveGroup, deleteGroup, renameGroup };
 }

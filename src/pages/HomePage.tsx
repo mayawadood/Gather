@@ -36,6 +36,7 @@ interface Props {
   onJoinGroup: (code: string) => Promise<string | null>;
   onLeaveGroup: (groupId: string, userId: string) => Promise<void>;
   onDeleteGroup: (groupId: string) => Promise<void>;
+  onRenameGroup: (groupId: string, name: string) => Promise<void>;
   getAccessToken: () => string | null;
   userName: string;
   profilePhoto?: string;
@@ -46,7 +47,7 @@ export function HomePage({
   user, groups, selectedGroup, events,
   onSelectGroup, onCreateEvent, onVoteTime, onVoteCantMakeIt, onVoteLocation,
   onFinalize, onUnfinalize, onUpdateGcalId, onFillAvailability, onEditEvent, onDeleteEvent,
-  onLogout, onRegenerateCode, onCreateGroup, onJoinGroup, onLeaveGroup, onDeleteGroup, getAccessToken, userName, profilePhoto, onChangeName
+  onLogout, onRegenerateCode, onCreateGroup, onJoinGroup, onLeaveGroup, onDeleteGroup, onRenameGroup, getAccessToken, userName, profilePhoto, onChangeName
 }: Props) {
   const { promoteWish } = useWishlist(selectedGroup.id);
   const [selectedEvent, setSelectedEvent] = useState<GatherEvent | null>(null);
@@ -313,6 +314,7 @@ export function HomePage({
           onJoinGroup={onJoinGroup}
           onLeaveGroup={onLeaveGroup}
           onDeleteGroup={onDeleteGroup}
+          onRenameGroup={onRenameGroup}
           onClose={() => setShowCircles(false)}
         />
       )}
