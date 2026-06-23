@@ -486,11 +486,13 @@ export function CreateEventModal({ onClose, onCreate, initialTitle = '', autoFil
           {timeMode === 'vote' && (
             <>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs text-gray-400">
-                  {filledTimeOptions.length === 1
-                    ? '✓ one time set — will be scheduled directly, no poll'
-                    : 'Add one or more options — friends will vote on them'}
-                </p>
+                {filledTimeOptions.length <= 1 && (
+                  <p className="text-xs text-gray-400">
+                    {filledTimeOptions.length === 1
+                      ? '✓ one time set — will be scheduled directly, no poll'
+                      : 'Add one or more options — friends will vote on them'}
+                  </p>
+                )}
                 {/* AI suggest button */}
                 {isAIConfigured && (
                   <button
