@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { format, parseISO, eachDayOfInterval } from 'date-fns';
 import { Zap, Check } from 'lucide-react';
 import type { GatherEvent } from '../types';
@@ -52,6 +52,49 @@ export function AvailabilityGrid({ event, userId, isCreator, onFillAvailability,
   const [finalizing, setFinalizing] = useState(false);
   const [pickedSlot, setPickedSlot] = useState<string | null>(null); // "date time"
 
+  function startDrag(date: string, time: string) {
+    const key = slotKey(date, time);
+    const mode = localSlots.has(key) ? 'remove' : 'add';
+    setDragMode(mode);
+    setIsDragging(true);
+    setSaved(false);
+    setLocalSlots(prev => {
+      const next = new Set(prev);
+      mode === 'remove' ? next.delete(key) : next.add(key);
+      return next;
+    });
+    return mode;
+  }
+
+  function applyDrag(date: string, time: string, mode: 'add' | 'remove') {
+    const key = slotKey(date, time);
+    setSaved(false);
+    setLocalSlots(prev => {
+      const next = new Set(prev);
+      mode === 'remove' ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
+  // Touch drag — track current drag mode in a ref so touch handlers can access it
+  const touchDragMode = useRef<'add' | 'remove'>('add');
+
+  function handleTouchStart(e: React.TouchEvent, date: string, time: string) {
+    e.preventDefault(); // prevent scroll while selecting
+    const mode = startDrag(date, time) as 'add' | 'remove';
+    touchDragMode.current = mode;
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    e.preventDefault();
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const date = el?.getAttribute('data-date');
+    const time = el?.getAttribute('data-time');
+    if (date && time) applyDrag(date, time, touchDragMode.current);
+  }
+
   if (!event.availabilityDates?.length) return null;
 
   const dates = eachDayOfInterval({
@@ -73,27 +116,12 @@ export function AvailabilityGrid({ event, userId, isCreator, onFillAvailability,
   const ranked = rankAvailabilitySlots(event, 5);
 
   function handleMouseDown(date: string, time: string) {
-    const key = slotKey(date, time);
-    const mode = localSlots.has(key) ? 'remove' : 'add';
-    setDragMode(mode);
-    setIsDragging(true);
-    setSaved(false);
-    setLocalSlots(prev => {
-      const next = new Set(prev);
-      mode === 'remove' ? next.delete(key) : next.add(key);
-      return next;
-    });
+    startDrag(date, time);
   }
 
   function handleMouseEnter(date: string, time: string) {
     if (!isDragging) return;
-    const key = slotKey(date, time);
-    setSaved(false);
-    setLocalSlots(prev => {
-      const next = new Set(prev);
-      dragMode === 'remove' ? next.delete(key) : next.add(key);
-      return next;
-    });
+    applyDrag(date, time, dragMode);
   }
 
   async function handleSave() {
@@ -133,6 +161,8 @@ export function AvailabilityGrid({ event, userId, isCreator, onFillAvailability,
       className="flex flex-col gap-4"
       onMouseUp={() => setIsDragging(false)}
       onMouseLeave={() => setIsDragging(false)}
+      onTouchEnd={() => setIsDragging(false)}
+      onTouchMove={handleTouchMove}
     >
       {/* Section header */}
       <div className="flex items-center justify-between">
@@ -190,9 +220,12 @@ export function AvailabilityGrid({ event, userId, isCreator, onFillAvailability,
                 return (
                   <div
                     key={key}
+                    data-date={date}
+                    data-time={time}
                     onMouseDown={() => handleMouseDown(date, time)}
                     onMouseEnter={() => handleMouseEnter(date, time)}
-                    className={`flex-1 min-w-[38px] h-[14px] border-b border-r border-gray-100 cursor-pointer select-none transition-colors
+                    onTouchStart={e => handleTouchStart(e, date, time)}
+                    className={`flex-1 min-w-[38px] h-[18px] border-b border-r border-gray-100 cursor-pointer select-none touch-none transition-colors
                       ${isPicked ? 'ring-2 ring-inset ring-rose-400' : ''}
                       ${isMine ? 'bg-rose-300' : overlapColor(othersHere.length, totalRespondents)}
                       ${ti === 0 ? 'border-t' : ''}
