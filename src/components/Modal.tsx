@@ -29,7 +29,7 @@ export function Modal({ title, onClose, children, fullScreen, zIndex = 50 }: Pro
             <X size={16} />
           </button>
         </div>
-        <div className="overflow-y-auto flex-1 px-5 py-4">
+        <div className="overflow-y-auto overflow-x-hidden flex-1 px-5 py-4">
           {children}
         </div>
       </div>

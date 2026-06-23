@@ -412,13 +412,13 @@ export function CreateEventModal({ onClose, onCreate, initialTitle = '', autoFil
         {/* ── Emoji cover picker ──────────────────────────────────────── */}
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pick a cover</label>
-          <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <div className="grid grid-cols-8 gap-1.5">
             {COVER_EMOJIS.map(e => (
               <button
                 key={e}
                 type="button"
                 onClick={() => setCover(e)}
-                className={`w-10 h-10 flex items-center justify-center rounded-xl text-xl shrink-0 transition-all ${
+                className={`aspect-square flex items-center justify-center rounded-xl text-xl transition-all ${
                   cover === e ? 'bg-rose-100 ring-2 ring-rose-300 scale-110' : 'bg-gray-100 hover:bg-gray-200'
                 }`}
               >
